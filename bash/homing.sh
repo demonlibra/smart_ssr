@@ -5,9 +5,11 @@
 
 # Параметры
 
-usb=/dev/ttyUSB0		# Путь для обращения к плате (обычно /dev/ttyUSB0)
-uart_speed=115200		# Скорость порта UART (для LERDGE 115200)
-timeout=300				# Время отключения драйверов при бездействии. Задать достаточным, чтобы во время процедуры калировки не происходило отключение драйверов. 
+usb=/dev/ttyUSB0		# Путь для обращения к плате (обычно /dev/ttyUSB0).
+uart_speed=115200		# Скорость порта UART (для LERDGE 115200).
+timeout=300				# Время отключения драйверов при бездействии. Задать достаточным, чтобы во время процедуры калировки не происходило отключение драйверов.
+
+Z_top=0					# Позиция Z для регулировки стола.
 
 # ----------------------------------------------------------
 
@@ -39,16 +41,18 @@ clear
 echo "Обнуление осей завершено"
 echo
 echo -n "Выполнить процедуру ручной калибровки стола? (y) "
-read answer
+read calibrate
 
-if [ "$answer" = "y" ] || [ "$answer" = "Y" ]
+if [ "$calibrate" = "y" ] || [ "$calibrate" = "Y" ]
 	then
 		while :
 			do
 				clear
 				echo
 				echo "Введите позицию 1,2,3,4 или 5 и нажмите ввод."
+				echo "Введите Z3.8 для изменения текущей координаты оси Z без перемещения (G92 Z3.8)."
 				echo "При вводе любого другого значения произойдет перемещение в безопасную зону."
+				echo
 				echo "-----------";echo "|1       2|";echo "|         |";echo "|    5    |";echo "|         |";echo "|3       4|";echo "-----------"
 				echo
 				echo "Текущие координаты:"
@@ -62,31 +66,36 @@ if [ "$answer" = "y" ] || [ "$answer" = "Y" ]
 					then
 						echo "G0 F800 Z10" > $usb
 						echo "G0 F1000 X20 Y20" > $usb
-						echo "G0 F500 Z0" > $usb
+						echo "G0 F500 Z$Z_top" > $usb
 						
 				elif [ "$position" = 2 ]
 					then
 						echo "G0 F500 Z10" > $usb
 						echo "G0 F1000 X200 Y20" > $usb
-						echo "G0 F500 Z0" > $usb
+						echo "G0 F500 Z$Z_top" > $usb
 				
 				elif [ "$position" = 3 ]
 					then
 						echo "G0 F500 Z10" > $usb
 						echo "G0 F1000 X200 Y175" > $usb
-						echo "G0 F500 Z0" > $usb
+						echo "G0 F500 Z$Z_top" > $usb
 						
 				elif [ "$position" = 4 ]
 					then
 						echo "G0 F500 Z10" > $usb
 						echo "G0 F1000 X20 Y175" > $usb
-						echo "G0 F500 Z0" > $usb
+						echo "G0 F500 Z$Z_top" > $usb
 						
 				elif [ "$position" = 5 ]
 					then
 						echo "G0 F800 Z10" > $usb
 						echo "G0 F1000 X110 Y95" > $usb
-						echo "G0 F500 Z0" > $usb
+						echo "G0 F500 Z$Z_top" > $usb
+						echo
+			
+				elif [[ "$position" = Z* ]]
+					then echo "G92 $position" > $usb
+		
 				else
 					echo "G0 F800 Z100 R" > $usb
 					echo "G0 F1000 X20 Y20" > $usb
