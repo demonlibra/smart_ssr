@@ -31,24 +31,24 @@ class backlashZ(Script):
 
 	def execute(self, data: list):
 		
-		backlash_Z=self.getSettingValueByKey("backlashZ")
+		backlash_Z=self.getSettingValueByKey("backlashZ")						#Получаем значение переменной из формы
 		
 		if backlash_Z > 0:
 			
-			number_of_layers = len(data)
+			number_of_layers = len(data)										#Получаем количество элементов в списке данных (слоев)
 
-			for i in range(2,number_of_layers-2):								#Перебираем слои
+			for i in range(2,number_of_layers-2):								#Перебираем список/слои
 
-				layer_lines = data[i].split("\n")
-				index = len(layer_lines)-4
+				layer_lines = data[i].split("\n")								#Формируем из слоя список 
+				index = len(layer_lines)-4										#Номер существующей строки с перемещением по Z
 
-				if "G0" in layer_lines[index] and "Z" in layer_lines[index]:
-					new_line = layer_lines[index]
-					new_Z = float(new_line[new_line.find("Z")+1:]) + backlash_Z
-					new_Z = round(new_Z,2)
-					new_line = new_line[:new_line.find("Z")+1] + str(new_Z)
-					layer_lines.insert(index,new_line)
+				if "G0" in layer_lines[index] and "Z" in layer_lines[index]:	#Выполнять только если строка содержит G0 и Z
+					new_line = layer_lines[index]								#Получаем строку с перемещением по Z
+					new_Z = float(new_line[new_line.find("Z")+1:]) + backlash_Z	#Выделяем значение Z и вычисляем новое значение 
+					new_Z = round(new_Z,2)	#Округляем Z до сотых
+					new_line = new_line[:new_line.find("Z")+1] + str(new_Z)		#Формируем новую строку для вставки в список
+					layer_lines.insert(index,new_line)							#Вставляем новую строку в список со сдвигом
 
-				data[i] = '\n'.join(layer_lines)
+				data[i] = '\n'.join(layer_lines)								#Объединяем список в данные и возвращаем в слой
 				
 		return data
