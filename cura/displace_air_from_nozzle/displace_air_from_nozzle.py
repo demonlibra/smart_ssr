@@ -1,3 +1,5 @@
+# Выдавить заданную длину пластика и сделать ретракт в указанном месте
+
 # This PostProcessing Plugin script is released 
 # under the terms of the AGPLv3 or higher
 
@@ -52,6 +54,38 @@ class displace_air_from_nozzle(Script):
 					"type": "int",
 					"default_value": 1500,
 					"minimum_value": "100"
+				},
+				"positionX":
+				{
+					"label": "Position X",
+					"description": "Position X",
+					"unit": "mm",
+					"type": "float",
+					"default_value": 100
+				},
+				"positionY":
+				{
+					"label": "Position Y",
+					"description": "Position Y",
+					"unit": "mm",
+					"type": "float",
+					"default_value": 100
+				},
+				"positionZ":
+				{
+					"label": "Position Z",
+					"description": "Position Z",
+					"unit": "mm",
+					"type": "float",
+					"default_value": 100
+				},
+				"positionspeed":
+				{
+					"label": "Speed movement",
+					"description": "Speed movement",
+					"unit": "mm",
+					"type": "int",
+					"default_value": 500
 				}
 			}
 		}"""
@@ -64,6 +98,11 @@ class displace_air_from_nozzle(Script):
 		retract=self.getSettingValueByKey("retractlength")
 		retract_speed=self.getSettingValueByKey("retractspeed")
 		
+		position_X=self.getSettingValueByKey("positionX")
+		position_Y=self.getSettingValueByKey("positionY")
+		position_Z=self.getSettingValueByKey("positionZ")
+		position_speed=self.getSettingValueByKey("positionspeed")
+		
 		if length > 0:
 		
 			layer=data[1]
@@ -73,14 +112,15 @@ class displace_air_from_nozzle(Script):
 			
 			for line in layer_lines:
 				
-				if "M82" in line:
-					new_lines = "M17 E" + "\n"
+				if "G92" in line:
+					
+					new_lines = "M17" + "\n"
+					new_lines = new_lines + "G0 F" + str(position_speed) + " X" + str(position_X) + " Y" + str(position_Y) + " Z" + str(position_Z) + "\n"
 					new_lines = new_lines + "G1 F" + str(speed) + " E" + str(length) + " R" + "\n"
 					new_lines = new_lines + "G1 F" + str(retract_speed) + " E-" + str(retract) + " R" + "\n"
 					layer_lines[index] =  new_lines + layer_lines[index]
-
+					data[1] = '\n'.join(layer_lines)
+					break
 				index += 1
-			
-			data[1] = '\n'.join(layer_lines)
 			
 		return data

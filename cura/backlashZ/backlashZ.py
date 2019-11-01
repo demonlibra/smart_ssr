@@ -1,3 +1,5 @@
+# Добавляет движение вниз при каждой смене слоя
+
 # This PostProcessing Plugin script is released 
 # under the terms of the AGPLv3 or higher
 
