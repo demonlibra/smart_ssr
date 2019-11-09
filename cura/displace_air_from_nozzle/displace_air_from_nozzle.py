@@ -32,7 +32,7 @@ class displace_air_from_nozzle(Script):
 				{
 					"label": "Speed displace",
 					"description": "Speed to displace the air from nozzle",
-					"unit": "mm",
+					"unit": "mm/s",
 					"type": "int",
 					"default_value": 500,
 					"minimum_value": "100"
@@ -50,7 +50,7 @@ class displace_air_from_nozzle(Script):
 				{
 					"label": "Retract Speed",
 					"description": "Retract speed",
-					"unit": "mm",
+					"unit": "mm/s",
 					"type": "int",
 					"default_value": 1500,
 					"minimum_value": "100"
@@ -83,9 +83,17 @@ class displace_air_from_nozzle(Script):
 				{
 					"label": "Speed movement",
 					"description": "Speed movement",
-					"unit": "mm",
+					"unit": "mm/s",
 					"type": "int",
 					"default_value": 500
+				},
+				"pause":
+				{
+					"label": "Pause",
+					"description": "Pause after displace",
+					"unit": "s",
+					"type": "int",
+					"default_value": 1
 				}
 			}
 		}"""
@@ -103,6 +111,8 @@ class displace_air_from_nozzle(Script):
 		position_Z=self.getSettingValueByKey("positionZ")
 		position_speed=self.getSettingValueByKey("positionspeed")
 		
+		pause=self.getSettingValueByKey("pause")
+		
 		if length > 0:
 		
 			layer=data[1]
@@ -118,6 +128,7 @@ class displace_air_from_nozzle(Script):
 					new_lines = new_lines + "G0 F" + str(position_speed) + " X" + str(position_X) + " Y" + str(position_Y) + " Z" + str(position_Z) + "\n"
 					new_lines = new_lines + "G1 F" + str(speed) + " E" + str(length) + " R" + "\n"
 					new_lines = new_lines + "G1 F" + str(retract_speed) + " E-" + str(retract) + " R" + "\n"
+					new_lines = new_lines + "M0 S" + str(pause) + "\n"
 					layer_lines[index] =  new_lines + layer_lines[index]
 					data[1] = '\n'.join(layer_lines)
 					break

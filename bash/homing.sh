@@ -106,7 +106,7 @@ if [ "$calibrate" = "y" ] || [ "$calibrate" = "Y" ]
 				elif [[ "$position" = Z* ]]
 					then echo "G92 $position" > $usb
 		
-				elif [[ "$position" = "G28" ]]
+				elif [ "$position" = "G28" ] || [ "$position" = "g28" ]
 					then echo "G28" > $usb
 					
 				else
