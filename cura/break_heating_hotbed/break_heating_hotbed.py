@@ -36,6 +36,14 @@ class break_heating_hotbed(Script):
 					"type": "int",
 					"default_value": 0,
 					"minimum_value": "0"
+				},
+				"rgb_code":
+				{
+					"label": "Code for RGB strip",
+					"description": "Insert code for RGB strip before heating",
+					"unit": "",
+					"type": "str",
+					"default_value": "M150 R250 S250"
 				}
 			}
 		}"""
@@ -44,6 +52,7 @@ class break_heating_hotbed(Script):
 		
 		number = self.getSettingValueByKey("number")
 		pause = self.getSettingValueByKey("pause")
+		rgb_code = self.getSettingValueByKey("rgb_code")
 		
 		if number > 0:
 
@@ -61,7 +70,7 @@ class break_heating_hotbed(Script):
 					step = (temperature - 25) / ( number + 1 )
 
 					temp = 25
-					new_lines = []
+					new_lines = [rgb_code]
 					i = 0
 					
 					while i <= number:
