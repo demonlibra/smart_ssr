@@ -22,7 +22,7 @@ class backlashZ(Script):
 				"backlashZ":
 				{
 					"label": "Backlash Z",
-					"description": "Backlash Z",
+					"description": "Add extra Z axis move on each layer change",
 					"unit": "mm",
 					"type": "float",
 					"default_value": 0.05,
