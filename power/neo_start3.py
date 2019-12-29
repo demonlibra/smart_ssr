@@ -27,19 +27,21 @@ strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, 
 # Intialize the library (must be called once before other functions).
 strip.begin()
 
-i = 0
-while i < LED_COUNT:
+#i = 0
+#while i < LED_COUNT:
+#    strip.setPixelColor(i, Color(100, 100, 100))
+#    strip.show()
+#    time.sleep(0.3)
+#    i += 1
+
+#raw_input('Press Enter to Exit')
+
+i = 4
+j = 4
+while i >= 0:
     strip.setPixelColor(i, Color(100, 100, 100))
-    i += 1
-strip.show()
-
-i = 0
-j = 8
-while i < 5:
-    strip.setPixelColor(i, Color(0, 0, 0))
-    strip.setPixelColor(j, Color(0, 0, 0))
+    strip.setPixelColor(j, Color(100, 100, 100))
     strip.show()
-    i += 1
-    j -= 1
     time.sleep(0.3)
-
+    i -= 1
+    j += 1
