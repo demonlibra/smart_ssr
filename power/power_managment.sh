@@ -1,3 +1,4 @@
+echo "Pushed button - "`date` >> /home/pi/button
 if [ -c /dev/ttyUSB0 ]
 	then
 		#stty 115200 -F /dev/ttyUSB0 raw -echo

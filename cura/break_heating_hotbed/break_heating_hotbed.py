@@ -37,6 +37,13 @@ class break_heating_hotbed(Script):
 					"default_value": 0,
 					"minimum_value": "0"
 				},
+				"pause_auto_calc":
+                {
+                    "label": "Automatic calculate",
+                    "description": "When enabled, pause for normalisation of table temperature will calculate automaticaly ( time(s) = temperature / 2 )",
+                    "type": "bool",
+                    "default_value": true
+                },
 				"rgb_code":
 				{
 					"label": "Code for RGB strip",
@@ -52,6 +59,7 @@ class break_heating_hotbed(Script):
 		
 		number = self.getSettingValueByKey("number")
 		pause = self.getSettingValueByKey("pause")
+		pause_auto_calc = self.getSettingValueByKey("pause_auto_calc")
 		rgb_code = self.getSettingValueByKey("rgb_code")
 		
 		if number > 0:
@@ -79,7 +87,9 @@ class break_heating_hotbed(Script):
 						new_lines.append(line[:position_S_in_line+1] + str(int(temp)))
 						i += 1
 					
-					if pause > 0:
+					if pause_auto_calc:
+						new_lines.append('M0 S' + str(int(temperature / 2)))
+					elif pause > 0:
 						new_lines.append('M0 S' + str(pause))
 						
 					layer_lines = new_lines + layer_lines
