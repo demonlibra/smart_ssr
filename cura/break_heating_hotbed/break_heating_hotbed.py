@@ -25,7 +25,7 @@ class break_heating_hotbed(Script):
 					"description": "Number of break for heating HotBed (M190)",
 					"unit": "",
 					"type": "int",
-					"default_value": 0,
+					"default_value": 10,
 					"minimum_value": "0"
 				},
 				"pause":
