@@ -39,7 +39,7 @@ class break_heating_hotbed(Script):
 				},
 				"pause_auto_calc":
                 {
-                    "label": "Automatic calculate",
+                    "label": "Automatic calculate pause",
                     "description": "When enabled, pause for normalisation of table temperature will calculate automaticaly ( time(s) = temperature / 2 )",
                     "type": "bool",
                     "default_value": true
