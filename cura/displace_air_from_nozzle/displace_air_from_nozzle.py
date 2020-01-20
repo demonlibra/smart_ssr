@@ -25,7 +25,7 @@ class displace_air_from_nozzle(Script):
 					"description": "Length of filament to displace the air from nozzle",
 					"unit": "mm",
 					"type": "float",
-					"default_value": 5,
+					"default_value": 6,
 					"minimum_value": "0"
 				},
 				"speeddisplace":
@@ -34,8 +34,8 @@ class displace_air_from_nozzle(Script):
 					"description": "Speed to displace the air from nozzle",
 					"unit": "mm/s",
 					"type": "int",
-					"default_value": 500,
-					"minimum_value": "100"
+					"default_value": 10,
+					"minimum_value": "1"
 				},
 				"retractlength":
 				{
@@ -43,7 +43,7 @@ class displace_air_from_nozzle(Script):
 					"description": "Length of retract",
 					"unit": "mm",
 					"type": "float",
-					"default_value": 1,
+					"default_value": 2,
 					"minimum_value": "0"
 				},
 				"retractspeed":
@@ -52,8 +52,8 @@ class displace_air_from_nozzle(Script):
 					"description": "Retract speed",
 					"unit": "mm/s",
 					"type": "int",
-					"default_value": 1500,
-					"minimum_value": "100"
+					"default_value": 25,
+					"minimum_value": "1"
 				},
 				"positionX":
 				{
@@ -61,7 +61,7 @@ class displace_air_from_nozzle(Script):
 					"description": "Position X",
 					"unit": "mm",
 					"type": "float",
-					"default_value": 100
+					"default_value": 125
 				},
 				"positionY":
 				{
@@ -69,7 +69,7 @@ class displace_air_from_nozzle(Script):
 					"description": "Position Y",
 					"unit": "mm",
 					"type": "float",
-					"default_value": 100
+					"default_value": 70
 				},
 				"positionZ":
 				{
@@ -77,7 +77,7 @@ class displace_air_from_nozzle(Script):
 					"description": "Position Z",
 					"unit": "mm",
 					"type": "float",
-					"default_value": 100
+					"default_value": 40
 				},
 				"positionspeed":
 				{
@@ -85,7 +85,7 @@ class displace_air_from_nozzle(Script):
 					"description": "Speed movement",
 					"unit": "mm/s",
 					"type": "int",
-					"default_value": 500
+					"default_value": 30
 				},
 				"pause":
 				{
@@ -93,7 +93,8 @@ class displace_air_from_nozzle(Script):
 					"description": "Pause after displace",
 					"unit": "s",
 					"type": "int",
-					"default_value": 1
+					"default_value": 1,
+					"minimum_value": "0"
 				}
 			}
 		}"""
@@ -101,15 +102,21 @@ class displace_air_from_nozzle(Script):
 	def execute(self, data: list):
 		
 		length=self.getSettingValueByKey("filamentlength")
-		speed=self.getSettingValueByKey("speeddisplace")
+		
+		speed_displace=self.getSettingValueByKey("speeddisplace")
+		speed_displace=speed_displace*60 
 		
 		retract=self.getSettingValueByKey("retractlength")
+		
 		retract_speed=self.getSettingValueByKey("retractspeed")
+		retract_speed=retract_speed*60
 		
 		position_X=self.getSettingValueByKey("positionX")
 		position_Y=self.getSettingValueByKey("positionY")
 		position_Z=self.getSettingValueByKey("positionZ")
+		
 		position_speed=self.getSettingValueByKey("positionspeed")
+		position_speed=position_speed*60
 		
 		pause=self.getSettingValueByKey("pause")
 		
@@ -126,9 +133,10 @@ class displace_air_from_nozzle(Script):
 					
 					new_lines = "M17" + "\n"
 					new_lines = new_lines + "G0 F" + str(position_speed) + " X" + str(position_X) + " Y" + str(position_Y) + " Z" + str(position_Z) + "\n"
-					new_lines = new_lines + "G1 F" + str(speed) + " E" + str(length) + " R" + "\n"
+					new_lines = new_lines + "G1 F" + str(speed_displace) + " E" + str(length) + " R" + "\n"
 					new_lines = new_lines + "G1 F" + str(retract_speed) + " E-" + str(retract) + " R" + "\n"
-					new_lines = new_lines + "M0 S" + str(pause) + "\n"
+					if pause > 0:
+						new_lines = new_lines + "M0 S" + str(pause) + "\n"
 					layer_lines[index] =  new_lines + layer_lines[index]
 					data[1] = '\n'.join(layer_lines)
 					break
