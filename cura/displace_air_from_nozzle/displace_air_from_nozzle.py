@@ -134,10 +134,11 @@ class displace_air_from_nozzle(Script):
 					new_lines = "M17" + "\n"
 					new_lines = new_lines + "G0 F" + str(position_speed) + " X" + str(position_X) + " Y" + str(position_Y) + " Z" + str(position_Z) + "\n"
 					new_lines = new_lines + "G1 F" + str(speed_displace) + " E" + str(length) + " R" + "\n"
-					new_lines = new_lines + "G1 F" + str(retract_speed) + " E-" + str(retract) + " R" + "\n"
+					new_lines = new_lines + "G92 E0" + "\n"
+					new_lines = new_lines + "G1 F" + str(retract_speed) + " E-" + str(retract)
 					if pause > 0:
-						new_lines = new_lines + "M0 S" + str(pause) + "\n"
-					layer_lines[index] =  new_lines + layer_lines[index]
+						new_lines = new_lines + "\n" + "M0 S" + str(pause)
+					layer_lines[index+1] =  layer_lines[index+1] + "\n" + new_lines
 					data[1] = '\n'.join(layer_lines)
 					break
 				index += 1
