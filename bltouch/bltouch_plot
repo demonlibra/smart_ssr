@@ -1,0 +1,4 @@
+set terminal png
+set output file_out
+set grid xtics ytics ztics
+splot file_mesh using 1:2:3 with lines
