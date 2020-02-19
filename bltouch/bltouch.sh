@@ -13,23 +13,31 @@ file_data="bltouch_lerdge_output"	#Файл вывода данных от Lerdg
 file_mesh="bltouch_mesh"		#Файл сетки координат
 gnuplot_script="bltouch_gnuplot"	#Сценарий для программы построения поверхности
 file_png="bltouch_plot"			#Файл вывода изображения поверхности
+
+$temperatura=25				#Температура нагрева стола
 #-------------------------------------------------------------------------------------
 
-time_stamp=$(date +%F-%H-%M)
 
-stty 115200 -F /dev/ttyUSB0 raw -echo
+time_stamp=$(date +%F-%H-%M)					#Дата и время	
+
+stty 115200 -F /dev/ttyUSB0 raw -echo				#Задаем параметры порта UART
 sleep 3
 
-cat /dev/ttyUSB0 > "$file_data"_"$time_stamp" &
-echo "G28" > /dev/ttyUSB0
+cat /dev/ttyUSB0 > "$file_data"_"$time_stamp" &			#Сбор данных вывода результатов в файл
+
+if [[ $temperatura -gt 25 ]]					#Греть ли стол		
+	then echo "M140 S$temperatura" > /dev/ttyUSB0
+fi
+
+echo "G28" > /dev/ttyUSB0					#Обнуляем оси
 
 if [[ $POINTS_X -gt 1 ]]
-	then STEP_X=$(( ($MAX_X-$MIN_X) / ($POINTS_X-1) ))
+	then STEP_X=$(( ($MAX_X-$MIN_X) / ($POINTS_X-1) ))	#Расчет шага по оси X
 	else STEP_X=$MAX_X
 fi
 
 if [[ $POINTS_Y -gt 1 ]]
-	then STEP_Y=$(( ($MAX_Y-$MIN_Y) / ($POINTS_Y-1) ))
+	then STEP_Y=$(( ($MAX_Y-$MIN_Y) / ($POINTS_Y-1) ))	#Расчет шага по оси Y
 	else STEP_Y=$MAX_Y
 fi
 
@@ -64,6 +72,7 @@ do
 			if [[ $i = $(($POINTS_X + 1)) ]]; then i=1; echo "" >> "$file_mesh"_"$time_stamp"; fi
 		fi
 done
+
 path1="$HOME/bltouch/$file_mesh"_"$time_stamp"
 path2="$HOME/bltouch/$file_png"_"$time_stamp".png
 gnuplot -e "file_mesh=\"$path1\"" -e "file_out=\"$path2\"" "$gnuplot_script"
