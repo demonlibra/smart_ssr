@@ -78,7 +78,13 @@ class break_heating_hotbed(Script):
 					step = (temperature - 25) / ( number + 1 )
 
 					temp = 25
-					new_lines = [rgb_code]
+					if "M150" in rgb_code:
+						new_lines = ['M150 S0',rgb_code]
+					elif rgb_code:
+						new_lines = [rgb_code]
+					else:
+						new_lines = []
+						
 					i = 0
 					
 					while i <= number:
@@ -88,9 +94,9 @@ class break_heating_hotbed(Script):
 						i += 1
 					
 					if pause_auto_calc:
-						new_lines.append('M0 S' + str(int(temperature / 2)))
+						new_lines.append('M0 S' + str(int(temperature / 2)) + '; PAUSE')
 					elif pause > 0:
-						new_lines.append('M0 S' + str(pause))
+						new_lines.append('M0 S' + str(pause) + '; PAUSE')
 						
 					layer_lines = new_lines + layer_lines
 					data[layer] = '\n'.join(layer_lines)
