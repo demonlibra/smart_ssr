@@ -78,7 +78,7 @@ class retract_calibration_towers(Script):
 			
 			step = 1
 			retract = initial_retract
-			layer_step_start = 1
+			layer_step_start = 2
 			layer_step_finish = layers_step + 2
 			E_before = 0.0
 			E_now = 0.0
