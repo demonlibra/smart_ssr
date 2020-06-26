@@ -34,6 +34,15 @@ class move_after_end(Script):
 					"unit": "mm",
 					"type": "float",
 					"default_value": 100
+				},
+				
+				"speed":
+				{
+					"label": "Speed",
+					"description": "Speed of Z movement",
+					"unit": "mm/s",
+					"type": "int",
+					"default_value": 600
 				}
 			}
 		}"""
@@ -42,6 +51,7 @@ class move_after_end(Script):
 		
 		increase_z=self.getSettingValueByKey("increase_z")
 		min_z=self.getSettingValueByKey("min_z")
+		speed=self.getSettingValueByKey("speed")
 		
 		layer_last_Z = data[-4].split("\n")
 	
@@ -52,7 +62,7 @@ class move_after_end(Script):
 				if new_Z < min_z:
 					new_Z = min_z
 					
-				new_line = "G0 Z" + str(new_Z)
+				new_line = "G0 F" + str(speed) + " Z" + str(new_Z)
 		
 		last_layer = data[-2].split("\n")
 		last_layer.insert(-1,new_line)
