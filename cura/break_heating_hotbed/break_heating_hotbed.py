@@ -28,9 +28,18 @@ class break_heating_hotbed(Script):
 					"default_value": 10,
 					"minimum_value": "0"
 				},
-				"pause":
+				"pause_between_break":
 				{
-					"label": "Pause",
+					"label": "Pause between break",
+					"description": "Pause between break",
+					"unit": "s",
+					"type": "int",
+					"default_value": 0,
+					"minimum_value": "0"
+				},
+				"pause_before_print":
+				{
+					"label": "Pause before print",
 					"description": "Pause after get temperature of HotBed",
 					"unit": "s",
 					"type": "int",
@@ -58,7 +67,8 @@ class break_heating_hotbed(Script):
 	def execute(self, data: list):
 		
 		number = self.getSettingValueByKey("number")
-		pause = self.getSettingValueByKey("pause")
+		pause_between_break = self.getSettingValueByKey("pause_between_break")
+		pause_before_print = self.getSettingValueByKey("pause_before_print")
 		pause_auto_calc = self.getSettingValueByKey("pause_auto_calc")
 		rgb_code = self.getSettingValueByKey("rgb_code")
 		
@@ -70,7 +80,7 @@ class break_heating_hotbed(Script):
 			index = 0
 			
 			for line in layer_lines:
-			
+
 				if "M190" in line:
 
 					position_S_in_line = line.rfind("S")
@@ -91,12 +101,14 @@ class break_heating_hotbed(Script):
 
 						temp += step
 						new_lines.append(line[:position_S_in_line+1] + str(int(temp)))
+						if pause_between_break > 0 and i < number:
+							new_lines.append("M0 S" + str(pause_between_break))
 						i += 1
 					
 					if pause_auto_calc:
 						new_lines.append('M0 S' + str(int(temperature / 2)) + '; PAUSE')
-					elif pause > 0:
-						new_lines.append('M0 S' + str(pause) + '; PAUSE')
+					elif pause_before_print > 0:
+						new_lines.append('M0 S' + str(pause_before_print) + '; PAUSE')
 						
 					layer_lines = new_lines + layer_lines
 					data[layer] = '\n'.join(layer_lines)
