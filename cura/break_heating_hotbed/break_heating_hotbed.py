@@ -19,6 +19,16 @@ class break_heating_hotbed(Script):
 			"version": 2,
 			"settings":
 			{
+				"start_temp":
+				{
+					"label": "Break from temperature",
+					"description": "Break from temperature",
+					"unit": "C",
+					"type": "int",
+					"default_value": 25,
+					"minimum_value": "20",
+					"maximum_value": "100"
+				},
 				"number":
 				{
 					"label": "Number of break",
@@ -26,7 +36,7 @@ class break_heating_hotbed(Script):
 					"unit": "",
 					"type": "int",
 					"default_value": 10,
-					"minimum_value": "0"
+					"minimum_value": "3"
 				},
 				"pause_between_break":
 				{
@@ -66,6 +76,7 @@ class break_heating_hotbed(Script):
 
 	def execute(self, data: list):
 		
+		start_temp = self.getSettingValueByKey("start_temp")
 		number = self.getSettingValueByKey("number")
 		pause_between_break = self.getSettingValueByKey("pause_between_break")
 		pause_before_print = self.getSettingValueByKey("pause_before_print")
@@ -85,9 +96,8 @@ class break_heating_hotbed(Script):
 
 					position_S_in_line = line.rfind("S")
 					temperature = int(line[position_S_in_line+1:])
-					step = (temperature - 25) / ( number + 1 )
+					step = (temperature - start_temp) / (number - 1)
 
-					temp = 25
 					if "M150" in rgb_code:
 						new_lines = ['M150 S0',rgb_code]
 					elif rgb_code:
@@ -95,15 +105,16 @@ class break_heating_hotbed(Script):
 					else:
 						new_lines = []
 						
-					i = 0
+					i = 1
 					
+					temp = start_temp
 					while i <= number:
 
-						temp += step
 						new_lines.append(line[:position_S_in_line+1] + str(int(temp)))
 						if pause_between_break > 0 and i < number:
 							new_lines.append("M0 S" + str(pause_between_break))
 						i += 1
+						temp += step
 					
 					if pause_auto_calc:
 						new_lines.append('M0 S' + str(int(temperature / 2)) + '; PAUSE')
