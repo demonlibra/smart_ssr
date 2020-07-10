@@ -43,6 +43,14 @@ class move_after_end(Script):
 					"unit": "mm/s",
 					"type": "int",
 					"default_value": 600
+				},
+				
+				"motors_off":
+				{
+					"label": "Power off motors",
+					"description": "Insert code M18",
+					"type": "bool",
+					"default_value": true
 				}
 			}
 		}"""
@@ -52,6 +60,7 @@ class move_after_end(Script):
 		increase_z=self.getSettingValueByKey("increase_z")
 		min_z=self.getSettingValueByKey("min_z")
 		speed=self.getSettingValueByKey("speed")
+		motors_off=self.getSettingValueByKey("motors_off")
 		
 		layer_last_Z = data[-4].split("\n")
 	
@@ -64,8 +73,12 @@ class move_after_end(Script):
 					
 				new_line = "G0 F" + str(speed) + " Z" + str(new_Z)
 		
-		last_layer = data[-2].split("\n")
+		last_layer = data[-1].split("\n")
 		last_layer.insert(-1,new_line)
-		data[-2] = '\n'.join(last_layer)
+		
+		if motors_off:
+			last_layer.insert(-1,"M18")
+		
+		data[-1] = '\n'.join(last_layer)
 		
 		return data
