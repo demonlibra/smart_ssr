@@ -1,7 +1,9 @@
 // Умное твердотельное реле или Питание грелки без потери ШИМ
 // Версия 3.3 от 14/08/2020
+// Для Arduino
+// Вариант Random-Phase
 // http://uni3d.store/viewtopic.php?f=63&t=527
-
+// https://github.com/demonlibra/uni/tree/master/smart_ssr
 
 
 // ------------------ Проверьте параметры ниже ---------------------------------------------------------
@@ -66,7 +68,7 @@ void loop() {
   }
   
   if (!Lerdge_PWM_state_Now && (micros() - Lerdge_PWM_Start > period_pwm)) duty = period_pwm; // Если нет импульсов и скважность 100%
-  if ( Lerdge_PWM_state_Now && (micros() - Lerdge_PWM_Start > period_pwm)) duty = 0;          // Если нет импульсов и скважность 0%
+  if ( Lerdge_PWM_state_Now && (micros() - Lerdge_PWM_End > period_pwm)) duty = 0;          // Если нет импульсов и скважность 0%
   if (duty < 0 ) duty = 0;                                        // Устранение отрицательных значений в моменты смены скважности ШИМ
 
   duty_cycle = (float)duty / period_pwm;                    // Скважность ШИМ = Длительность импульса / период (20000 мкс)
