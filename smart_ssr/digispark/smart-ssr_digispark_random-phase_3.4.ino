@@ -1,6 +1,6 @@
 // Умное твердотельное реле или Питание грелки без потери ШИМ
-// Версия 3.4 digispark от 02/09/2020
-// Вариант для платы digispark
+// Версия 3.4 для платы digispark от 02/09/2020
+// Вариант Random-Phase
 // http://uni3d.store/viewtopic.php?f=63&t=527
 // https://github.com/demonlibra/uni/tree/master/smart_ssr
 
@@ -8,7 +8,7 @@
 // ------------------ Проверьте параметры ниже ---------------------------------------------------------
 
 unsigned int power_nominal = 600;     // Номинальная мощность грелки (Вт)
-unsigned int power_limit   = 350;     // Ограничение максимальной мощности грелки (Вт)
+unsigned int power_limit   = 300;     // Ограничение максимальной мощности грелки (Вт)
 
 const byte   freq_supply   = 50;      //  Частота напряжения в сети (Гц)
 const byte   freq_pwm      = 50;      //  Частота ШИМ на выходе платы управления (Гц). Для Lerdge = 50, для Marlin = 8.
@@ -55,24 +55,22 @@ void setup() {
 void loop() {
 
   Lerdge_PWM_state_Now = digitalRead(pwm_in);               // Текущее состояние ШИМ
-  
+
   if (!Lerdge_PWM_state_Now && Lerdge_PWM_state_Before) {
     Lerdge_PWM_Start = micros();                            // Определение фронта импульса ШИМ сигнала
   }
   if (Lerdge_PWM_state_Now && !Lerdge_PWM_state_Before) {
     Lerdge_PWM_End = micros();                              // Определение спада импульса ШИМ сигнала
     duty = Lerdge_PWM_End - Lerdge_PWM_Start;               // Расчёт длительности импульса ШИМ сигнала
-
-    
   }
-  
+
   if (!Lerdge_PWM_state_Now && (micros() - Lerdge_PWM_Start > period_pwm)) duty = period_pwm; // Если нет импульсов и скважность 100%
   if (Lerdge_PWM_state_Now && (micros() - Lerdge_PWM_End > period_pwm)) duty = 0;             // Если нет импульсов и скважность 0%
   
   duty_cycle = (float)duty / period_pwm;                    // Скважность ШИМ = Длительность импульса / период (20000 мкс)
   if (duty_cycle > duty_cycle_limit) duty_cycle = duty_cycle_limit;   // Ограничение мощности
 
-  Lerdge_PWM_state_Before = Lerdge_PWM_state_Now;           // Сохранение предыдущее состояния ШИМ
+  Lerdge_PWM_state_Before = Lerdge_PWM_state_Now;           // Сохранение предыдущего состояния ШИМ
 
 
   // Расчет момента времени открытия симистора через пропорцию площади ШИМ и площади синусоиды:
@@ -83,7 +81,7 @@ void loop() {
   //
   // Площадь под аркой синусоиды S = cos(x1) - cos(x2)
   // Конец арки синусоиды совпадает с переходом через 0, т.е. x2 = Pi и cos(x2) = cos(Pi) = -1
-  // 
+  //
   // duty_cycle x 2 = cos(x1) - (-1)
   // cos(x1) = duty_cycle x 2 - 1
   // radian = acos(duty_cycle * 2 - 1);                         // !!! Вычисление занимает около ~270 мкс
@@ -92,22 +90,22 @@ void loop() {
   // radian <=> T
   //
   // T = radian * period/2 / 3.1415;                              // Момент времени открытия симистора
-  
+
 
   ZC_now = digitalRead(ZC_in);                                  // Текущее состояние триггера перехода напряжения через ноль
 
   if (ZC_now && !ZC_before) {                                   // Выполнять, если обнаружен фронт перехода напряжения через ноль
     pwm_out = 1;                                                // Триггер разрешения выдачи импульса открытия симистора
     timer_ZC = micros();                                        // Запись времени перехода напряжения через ноль
-    radian = acos(duty_cycle * 2 - 1);                          
-    T = radian * period_supply/2 / 3.1415;                      // Момент времени открытия симистора    
+    radian = acos(duty_cycle * 2 - 1);
+    T = radian * period_supply/2 / 3.1415;                      // Момент времени открытия симистора
   }
 
   if (!ZC_now && ZC_before) ZC_duration = micros() - timer_ZC;  // Расчет длительности импульса определения перехода фазы через ноль
 
   ZC_before = ZC_now;                                           // Сохранение текущего состояния
 
-  // Таймер активации симистора
+  // Активация симистора. Импульс необходимо выключить заблаговременно. Иначе спад импульса может оказаться после момент перехода фазы через ноль.
   if ((micros() - timer_ZC > T + ZC_duration/2) && pwm_out && (T < period_supply/2)) {
     digitalWrite(dimmer_out, HIGH);                             // Фронт импульса открытия симистора
     pwm_out = 0;                                                // Обнуление триггера для обеспечения выдачи короткого импульса
