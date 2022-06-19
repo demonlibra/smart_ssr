@@ -18,7 +18,7 @@
 Несоответствие коэффициента заполнения сигнала управления и выходной мощности может быть причиной больших отклонений температуры от заданной. 
 Решить описанную проблему может следующее решение:
 
-<img src="https://github.com/demonlibra/smart_ssr/blob/master/arduino/dimmer+arduino.jpg" width="400"> <img src="https://github.com/demonlibra/smart_ssr/blob/master/digispark/smart_ssr_digispark.jpg" width="400">
+<img src="https://github.com/demonlibra/smart_ssr/blob/master/arduino/smart_ssr_arduino.jpg" width="400"> <img src="https://github.com/demonlibra/smart_ssr/blob/master/digispark/smart_ssr_digispark.jpg" width="400">
 
 ### Комплектующие
 - Arduino или digispark
