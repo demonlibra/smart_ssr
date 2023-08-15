@@ -1,7 +1,7 @@
 # Умное твердотельное реле с анализом ШИМ
 
 ### Ссылки
-- [Обсуждение в теме форума UNI](https://uni3d.store/viewtopic.php?t=527)
+- [Обсуждение в теме форума UNI](https://forum.uni-3d.ru/viewtopic.php?t=527)
 - [Как залить Sketch в Arduino?](https://alexgyver.ru/arduino-first)
 
 ### Описание проблемы
